@@ -19,13 +19,23 @@ class Mp3ServerApp
     [get_mp3_file_response_headers(filename), get_mp3_file(filename)]
   end
 
+  def append_index_to_response
+    [
+      {
+        'Content-Type' => 'text/html',
+        'Cache-Control' => 'public, max-age=86400'
+      },
+      File.open('public/index.html', File::RDONLY)
+    ]
+  end
+
   public
 
   def call(env)
     req = Rack::Request.new env
     res = [200]
 
-    res += append_mp3_to_response(req.params['f']) if req.post?
+    res += req.post? ? append_mp3_to_response(req.params['f']) : append_index_to_response
   end
 end
   
