@@ -1,1 +1,1 @@
-rackup
+web: rackup
