@@ -1,0 +1,2 @@
+class VideoProcessingError < IOError
+end
