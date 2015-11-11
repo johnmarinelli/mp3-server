@@ -7,8 +7,11 @@ class Mp3ServerApp
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
   def process_video(video_id)
-    output = `youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 -o "public/mp3/%(id)s.%(ext)s" https://www.youtube.com/watch?v=#{video_id}`
-    p output
+    # output = `youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 -o "public/mp3/%(id)s.%(ext)s" https://www.youtube.com/watch?v=#{video_id}`
+    `youtube-dl -o "public/mp3/%(id)s.%(ext)s" https://www.youtube.com/watch?v=#{video_id}`
+    `avconv -i public/mp3/#{video_id}.mp4 -vn -f mp3 public/mp3/#{video_id}.mp3`
+    `rm public/mp3/#{video_id}.mp4`
+
     File.open "public/mp3/#{video_id}.mp3", File::RDONLY
     #raise VideoProcessingError
   end
