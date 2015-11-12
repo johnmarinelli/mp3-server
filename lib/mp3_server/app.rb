@@ -7,17 +7,17 @@ class Mp3ServerApp
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
   def process_video(video_id)
-    # output = `youtube-dl --extract-audio --audio-format mp3 --audio-quality 0 -o "public/mp3/%(id)s.%(ext)s" https://www.youtube.com/watch?v=#{video_id}`
-    `youtube-dl -o "public/mp3/%(id)s.%(ext)s" https://www.youtube.com/watch?v=#{video_id}`
-    `avconv -i public/mp3/#{video_id}.mp4 -vn -f mp3 public/mp3/#{video_id}.mp3`
-    `rm public/mp3/#{video_id}.mp4`
+    system 'youtube-dl', '-o', 'public/mp3/%(id)s.%(ext)s', "https://www.youtube.com/watch?v=#{video_id}"
+    system *%W[avconv -i public/mp3/#{video_id}.mp4 -vn -f mp3 public/mp3/#{video_id}.mp3]
+    system *%W[rm public/mp3/#{video_id}.mp4]
+
+    if $?.exitstatus != 0 then raise VideoProcessingError; end
 
     File.open "public/mp3/#{video_id}.mp3", File::RDONLY
-    #raise VideoProcessingError
   end
 
   def get_mp3_file(video_id)
-    path = "public/mp3/#{video_id}"
+    path = "public/mp3/#{video_id}.mp3"
 
     # check if file exists in cache
     File.exists?(path) ? File.open(path, File::RDONLY) : process_video(video_id)
@@ -46,4 +46,3 @@ class Mp3ServerApp
     res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(req.params['f']) : append_index_to_response
   end
 end
-  
