@@ -43,7 +43,7 @@ class Mp3ServerApp
     req = Rack::Request.new env
     res = [200]
 
-    res += req.post? ? append_mp3_to_response(req.params['f']) : append_index_to_response
+    res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(req.params['f']) : append_index_to_response
   end
 end
   
