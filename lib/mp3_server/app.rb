@@ -8,9 +8,13 @@ class Mp3ServerApp
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
   def process_video(uri, video_id)
-    system 'youtube-dl', '-o', 'public/mp3/%(id)s.%(ext)s', uri.to_s
-    system *%W[avconv -i public/mp3/#{video_id}.mp4 -vn -f mp3 public/mp3/#{video_id}.mp3]
-    system *%W[rm public/mp3/#{video_id}.mp4]
+    # TODO: consider if %(ext)s is not .mp4 or .mp3
+    system 'youtube-dl', '-o', "public/mp3/#{video_id}.%(ext)s", uri.to_s
+
+    unless File.file? "public/mp3/#{video_id}.mp3"
+      system 'avconv', '-i', "public/mp3/#{video_id}.mp4", '-vn', '-f', 'mp3', "public/mp3/#{video_id}.mp3"
+      system *%W[rm public/mp3/#{video_id}.mp4]
+    end
 
     if $?.exitstatus != 0 then raise VideoProcessingError; end
 
