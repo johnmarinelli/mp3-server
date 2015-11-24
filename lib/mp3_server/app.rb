@@ -6,8 +6,8 @@ class Mp3ServerApp
   private
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
-  def process_video(video_id)
-    system 'youtube-dl', '-o', 'public/mp3/%(id)s.%(ext)s', "https://www.youtube.com/watch?v=#{video_id}"
+  def process_video(url, video_id)
+    system 'youtube-dl', '-o', 'public/mp3/%(id)s.%(ext)s', url.to_s
     system *%W[avconv -i public/mp3/#{video_id}.mp4 -vn -f mp3 public/mp3/#{video_id}.mp3]
     system *%W[rm public/mp3/#{video_id}.mp4]
 
@@ -16,7 +16,18 @@ class Mp3ServerApp
     File.open "public/mp3/#{video_id}.mp3", File::RDONLY
   end
 
-  def get_mp3_file(video_id)
+  def create_video_id_from_url(url)
+    host = url.host
+    video_id = ''
+    if host.match /soundcloud.com/
+      video_id = url.path
+    elsif host.match /youtube.com/
+      video_id = url.query
+    end
+  end
+
+  def get_mp3_file(url)
+    video_id = create_video_id_from_url url
     path = "public/mp3/#{video_id}.mp3"
 
     # check if file exists in cache
@@ -25,9 +36,11 @@ class Mp3ServerApp
 
   # returns an mp3 if all goes well.
   # returns { 'Content-Type' => json } with error message otherwise
-  def append_mp3_to_response(video_id)
+  def append_mp3_to_response(url)
     begin
-      HttpResponseHeadersUtil.get_mp3_response_headers video_id, get_mp3_file(video_id)
+      mp3 = get_mp3_file url
+      video_id = create_video_id_from_url url
+      HttpResponseHeadersUtil.get_mp3_response_headers video_id, mp3
     rescue IOError => e
       HttpResponseHeadersUtil.get_json_response_headers({ :error => e }.to_json)
     end
@@ -43,6 +56,8 @@ class Mp3ServerApp
     req = Rack::Request.new env
     res = [200]
 
-    res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(req.params['f']) : append_index_to_response
+    url = UriReceiver.new.get_uri req.params
+
+    res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(url) : append_index_to_response
   end
 end
