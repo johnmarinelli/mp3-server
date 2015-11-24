@@ -15,7 +15,7 @@ describe 'mp3 server app' do
   end
 
   it 'responds with an mp3 file for a found file' do
-    get '/dl', { :f => 'out.mp3' }
+    get '/dl', { 'host' => 'youtube.com', 'path' => '/watch', 'query' => 'v=out' }
     expect(last_response.status).to eq(200)
     expect(last_response.content_type).to eq('audio/mpeg')
   end

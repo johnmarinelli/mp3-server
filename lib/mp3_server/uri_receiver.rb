@@ -1,6 +1,6 @@
 # receives a JSON-encoded URI object from client.  
 # unpacks it and returns a sanitized URI for youtube-dl to process
-#
+
 class UriReceiver
 private
   # makes assumptions about the given uri and manipulates accordingly
