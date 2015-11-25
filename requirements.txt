@@ -11,5 +11,5 @@ jinja2==2.8               # via flask
 markupsafe==0.23          # via jinja2
 werkzeug==0.10.4          # via flask
 youtube-dl-server==0.2
-youtube-dl==2015.11.15    # via youtube-dl-server
+youtube-dl==2015.11.24    # via youtube-dl-server
 ffprobe
