@@ -1,9 +1,9 @@
 class HttpResponseHeadersUtil
-  
   def self.get_json_response_headers(msg)
     [
       {
         'Content-Type' => 'application/json',
+        'Content-Disposition' => 'attachment; filename=error.json'
       },
       [msg.to_s]
     ]
