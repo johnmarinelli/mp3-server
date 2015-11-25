@@ -65,7 +65,6 @@ class Mp3ServerApp
   def call(env)
     req = Rack::Request.new env
     res = [200]
-    p req.params
 
     res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(UriReceiver.new.get_uri(req.params)) : append_index_to_response
   end
