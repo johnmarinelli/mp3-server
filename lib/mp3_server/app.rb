@@ -2,9 +2,16 @@ require 'json'
 require_relative 'http_response_headers_util'
 require_relative 'video_processing_error'
 require_relative 'uri_receiver'
+require_relative 'router'
+
+# require all controllers
+Dir[File.dirname(__FILE__) + '/../../app/controllers/*.rb'].each do |f|
+  require f
+end
 
 class Mp3ServerApp
   private
+  attr_accessor :router
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
   def process_video(uri, video_id)
@@ -61,11 +68,16 @@ class Mp3ServerApp
   end
 
   public
+  def initialize
+    @router = Router.new
+    @router.register_route :get, '/', IndexController, 'show'
+  end
 
   def call(env)
     req = Rack::Request.new env
-    res = [200]
+    @router.call req
+    #res = [200]
 
-    res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(UriReceiver.new.get_uri(req.params)) : append_index_to_response
+    #res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(UriReceiver.new.get_uri(req.params)) : append_index_to_response
   end
 end
