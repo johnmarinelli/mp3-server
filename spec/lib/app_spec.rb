@@ -61,6 +61,4 @@ describe 'mp3 server app' do
       expect(File.delete('public/mp3/lays-stay-kettle-cookedfuture-thought-it-was-a-drought-dirty-sprite-2.mp3')).to eq(1)
     end)
   end
-
-
 end

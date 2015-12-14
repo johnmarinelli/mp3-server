@@ -13,11 +13,9 @@ class Router
 
   # method: symbol, path: string, controller: string, method: string
   def register_route(method, path, controller, controller_method) 
-    @routes[method.to_sym] =  {
-      path.to_s => {
-        :controller => controller.to_s,
-        :method => controller_method.to_s
-      }
+    @routes[method.to_sym][path.to_s] = {
+      :controller => controller.to_s,
+      :method => controller_method.to_s
     }
   end
 
@@ -30,7 +28,7 @@ class Router
       intent = @routes[method][path]
       controller = Object.const_get(intent[:controller]).new
       method = intent[:method]
-      res = controller.send method
+      res = controller.send method, req
     rescue NoMethodError, NameError => e
       # TODO: handle error?
       raise e

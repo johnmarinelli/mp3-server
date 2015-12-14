@@ -1,17 +1,11 @@
-require 'json'
-require_relative 'http_response_headers_util'
-require_relative 'video_processing_error'
-require_relative 'uri_receiver'
-require_relative 'router'
+require_relative './base_controller'
+require_relative '../../lib/mp3_server/http_response_headers_util'
+require_relative '../../lib/mp3_server/video_processing_error'
+require_relative '../../lib/mp3_server/uri_receiver'
 
-# require all controllers
-Dir[File.dirname(__FILE__) + '/../../app/controllers/*.rb'].each do |f|
-  require f
-end
-
-class Mp3ServerApp
+class Mp3FileController < BaseController
   private
-  attr_accessor :router
+
   # Runs youtube-dl and avconv to convert video to audio and returns file
   # Raises: VideoProcessingError
   def process_video(uri, video_id)
@@ -53,7 +47,7 @@ class Mp3ServerApp
 
   # returns an mp3 if all goes well.
   # returns { 'Content-Type' => json } with error message otherwise
-  def append_mp3_to_response(uri)
+  def get_mp3_response(uri)
     begin
       mp3 = get_mp3_file uri
       video_id = create_video_id_from_uri uri
@@ -63,21 +57,10 @@ class Mp3ServerApp
     end
   end
 
-  def append_index_to_response
-    HttpResponseHeadersUtil.get_html_response_headers 'public/index.html' 
-  end
-
-  public
-  def initialize
-    @router = Router.new
-    @router.register_route :get, '/', IndexController, 'show'
-  end
-
-  def call(env)
-    req = Rack::Request.new env
-    @router.call req
-    #res = [200]
-
-    #res += req.path.split('/')[1] == 'dl' ? append_mp3_to_response(UriReceiver.new.get_uri(req.params)) : append_index_to_response
+  public 
+  def get_file(req)
+    uri = UriReceiver.new.get_uri req.params
+    mp3_res = get_mp3_response uri
+    [200] + mp3_res
   end
 end
