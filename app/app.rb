@@ -15,6 +15,7 @@ class Mp3ServerApp
     @router = Router.new
     @router.register_route :get, '/', IndexController, 'show'
     @router.register_route :get, '/dl', Mp3FileController, 'get_file'
+    @router.register_route :get, '/video-dl', VideoFileController, 'get_file'
   end
 
   def call(env)

@@ -28,5 +28,15 @@ class HttpResponseHeadersUtil
       file
     ]
   end
+
+  def self.get_mp4_response_headers(filename, file)
+    [
+      {
+        'Content-Type' => 'video/mp4',
+        'Content-Disposition' => "attachment; filename=\"#{filename}\""
+      },
+      file
+    ]
+  end
 end
 
