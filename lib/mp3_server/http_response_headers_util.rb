@@ -23,7 +23,7 @@ class HttpResponseHeadersUtil
     [
       {
         'Content-Type' => 'audio/mpeg',
-        'Content-Disposition' => "attachment; filename=\"#{filename}\""
+        'Content-Disposition' => "attachment; filename=\"#{filename}.mp3\""
       },
       file
     ]
@@ -33,7 +33,7 @@ class HttpResponseHeadersUtil
     [
       {
         'Content-Type' => 'video/mp4',
-        'Content-Disposition' => "attachment; filename=\"#{filename}\""
+        'Content-Disposition' => "attachment; filename=\"#{filename}.mp4\""
       },
       file
     ]
